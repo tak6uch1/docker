@@ -1,5 +1,6 @@
 FROM node:10.15-alpine
 
+RUN mkdir /src
 WORKDIR /src
 
 RUN echo {} > package.json

@@ -39,7 +39,8 @@ services:
     build: ./node
     container_name: node
     volumes:
-      - ./data/node:/src
+      - ./data/node/app.js:/src/app.js
+      - ./data/node/views:/src/views
     working_dir: /src
     ports:
       - "3000:3000"
