@@ -1,0 +1,65 @@
+<html>
+<head>
+    <title>Address Book</title>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $( () => {
+            let update = (data) => {
+                $('#tbl').empty();
+                $('#sel').empty();
+                $('#tbl').append('<tr style="background: #ccccff;"><td>Name</td><td>Address</td></tr>');
+                for(let i in data){
+                    $('#tbl').append('<tr><td>' + data[i].name + '</td><td>' + data[i].address + '</td></tr>');
+                    $('#sel').append('<option address="' + data[i].address + '">' + data[i].name + '</optio>');
+                }
+            }
+            $('#add').on("click", () => {
+                $.get(
+                    'http://localhost:3000/add/' + $('#name').val(),
+                    {address:$('#address').val()},
+                    'json'
+                ).done( (data) => {
+                    update(data);
+                    $('#name').val('');
+                    $('#address').val('');
+                }).fail( (XMLHttpRequest, textStatus, errorThrown) => {
+                    alert(errorThrown);
+                });
+            });
+            $('#del').on("click", () => {
+                $.get(
+                    'http://localhost:3000/del/' + $('#sel option:selected').val(),
+                    {address:$('#sel option:selected').attr('address')},
+                    'json'
+                ).done( (data) => {
+                    update(data);
+                }).fail( (XMLHttpRequest, textStatus, errorThrown) => {
+                    alert(errorThrown);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <p>Address List</p>
+    <form>
+        Name: <input type="text" id="name">
+        Address: <input type="text" id="address">
+        <button id="add">Add</button>
+    </form>
+    <select id="sel">
+        <% for (let i in posts){ %>
+        <option address="<%= posts[i].address %>"><%= posts[i].name %></option>
+        <% } %>
+    </select>
+    <button id="del">Delete</button>
+    <br><br>
+    <table border="1" cellpadding="5" cellspacing="2" id="tbl">
+        <tr style="background: #ccccff;"><td>Name</td><td>Address</td></tr>
+        <% for (let i in posts){ %>
+        <tr><td><%= posts[i].name %></td><td><%= posts[i].address %></td></tr>
+        <% } %>
+    </table>
+</body>
+</html>

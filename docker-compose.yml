@@ -1,0 +1,78 @@
+version: "3.4"
+services:
+  base:
+    build: base
+    container_name: base
+    command: /usr/sbin/sshd -D
+    ports:
+      - "49944:22"
+      - "50080:8080"
+    volumes:
+      - type: bind
+        source: ./work
+        target: /work
+      - type: bind
+        source: ./data
+        target: /data
+    networks:
+      mynet:
+        ipv4_address: 172.18.0.10
+
+  nginx:
+    image: nginx:1.13.5-alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - php
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./data/html:/var/www/html
+
+  php:
+    image: php:7.1.9-fpm
+    container_name: php
+    volumes:
+      - ./data/html:/var/www/html
+
+  node:
+    build: ./node
+    container_name: node
+    volumes:
+      - ./data/node:/src
+    working_dir: /src
+    ports:
+      - "3000:3000"
+    networks:
+      mynet:
+        ipv4_address: 172.18.0.4
+    depends_on:
+      - postgres
+    entrypoint:
+      - node
+      - app
+
+  postgres:
+    build: ./postgres
+    container_name: pg
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdb:/var/lib/postgresql/data
+    networks:
+      mynet:
+        ipv4_address: 172.18.0.2
+
+volumes:
+  pgdb:
+    external: false
+
+networks:
+  mynet:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
