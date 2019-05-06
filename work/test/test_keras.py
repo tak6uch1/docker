@@ -3,11 +3,15 @@ from keras.datasets import fashion_mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
+from IPython import get_ipython
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
 
 #%matplotlib inline
+ipy = get_ipython()
+if ipy is not None:
+    ipy.run_line_magic('matplotlib', 'inline')
 
 np.random.seed(0)
 

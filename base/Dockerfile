@@ -2,7 +2,6 @@ FROM python:3.6
 ARG USER=user
 ARG GROUP=developer
 ARG PASS=password
-ARG DISPLAY=192.168.179.8:0.0
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NOWARNINGS yes
@@ -96,7 +95,6 @@ RUN echo 'alias jupyter_notebook="jupyter notebook --ip=0.0.0.0 --port=8080"' >>
 RUN echo 'export GOROOT="/usr/local/go"' >> /home/$USER/.profile
 RUN echo 'export GOPATH="/work/go"' >> /home/$USER/.profile
 RUN echo 'export PATH="/work/bin:$GOPATH/bin:$GOROOT/bin:$PATH"' >> /home/$USER/.profile
-RUN echo "export DISPLAY=${DISPLAY}" >> /home/$USER/.profile
 RUN echo 'PS1="\$ "' >> /home/$USER/.bashrc
 RUN echo 'set background=dark' > /home/$USER/.vimrc
 RUN echo 'syntax on' >> /home/$USER/.vimrc
