@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
   libatlas-base-dev \
   libgl1-mesa-dev \
   locales \
+  locales-all \
   make \
   man \
   manpages-dev \
@@ -81,6 +82,21 @@ RUN apt-get update && apt-get -y upgrade && \
   tar xvf go1.11.4.linux-amd64.tar.gz && \
   mv go /usr/local
 
+# Locale
+ARG LANGVAL=en_US.utf8
+RUN echo "export LANG=$LANGVAL" >> /etc/profile
+RUN echo "export LANGUAGE=$LANGVAL" >> /etc/profile
+RUN echo "export LC_CTYPE=$LANGVAL" >> /etc/profile
+RUN echo "export LC_ALL=$LANGVAL" >> /etc/profile
+ENV LANG     $LANGVAL
+ENV LANGUAGE $LANGVAL
+ENV LC_CTYPE $LANGVAL
+ENV LC_ALL   $LANGVAL
+RUN echo "$LANGVAL UTF-8" > /etc/locale.gen && \
+    locale-gen && \
+    update-locale LANG=$LANGVAL
+
+RUN cp /usr/share/zoneinfo/Japan /etc/localtime
 
 #### User ####
 USER $USER
@@ -96,8 +112,6 @@ RUN echo 'export GOROOT="/usr/local/go"' >> /home/$USER/.profile
 RUN echo 'export GOPATH="/work/go"' >> /home/$USER/.profile
 RUN echo 'export PATH="/work/bin:$GOPATH/bin:$GOROOT/bin:$PATH"' >> /home/$USER/.profile
 RUN echo 'PS1="\$ "' >> /home/$USER/.bashrc
-RUN echo 'set background=dark' > /home/$USER/.vimrc
-RUN echo 'syntax on' >> /home/$USER/.vimrc
 RUN touch /home/$USER/.Xauthority && chmod 600 /home/$USER/.Xauthority
 
 USER root
@@ -106,6 +120,10 @@ USER root
 #ADD .gitconfig /home/$USER
 #RUN chown $USER:$GROUP /home/$USER/.netrc /home/$USER/.gitconfig
 #RUN chmod 644 /home/$USER/.netrc /home/$USER/.gitconfig
+ADD .vimrc /home/$USER/.vimrc
+ADD .gvimrc /home/$USER/.gvimrc
+RUN chown -R $USER:$GROUP /home/$USER/.*vim*
+RUN chmod -R 644 /home/$USER/.*vim*
 
 EXPOSE 22
 EXPOSE 8080
