@@ -36,7 +36,6 @@ RUN apt-get update && apt-get install -y \
   sudo \
   unzip \
   vim \
-  vim-gnome \
   wget \
   xorg-dev \
   zlib1g-dev \
